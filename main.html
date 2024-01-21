@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <title>The Oaklandside Beta</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="googlebot" content="noindex, nofollow">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+  <script
+    type="text/javascript"
+    src="/js/lib/dummy.js"
+    
+  ></script>
+
+    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+
+      <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+      <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css">
+
+  <style id="compiled-css" type="text/css">
+      
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      h2,
+      h3 {
+        margin: 10px;
+        font-size: 1.2em;
+      }
+      h3 {
+        font-size: 1em;
+      }
+      p {
+        font-size: 0.85em;
+        margin: 10px;
+        text-align: left;
+      }
+      option:disabled {
+       font-family:"Arial Black";
+       background: #bdbdbd;
+       color: black;
+       width: 500px;
+       padding: 5px;
+       }
+      .map-overlay {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: rgba(255, 255, 255, 0.8);
+        margin-right: 20px;
+        font-family: Arial, sans-serif;
+        overflow: auto;
+        border-radius: 3px;
+      }
+      #map {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+      }
+      #features {
+        top: 0;
+        height: 180px;
+        margin-top: 55px;
+        width: 250px;
+      }
+      #layerlist {
+        top: 0;
+        left: 0;
+        height: 200px;
+        margin-top: 20px;
+        width: 250px;
+      }
+      #legend {
+      padding: 10px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 18px;
+      height: 90px;
+      margin-bottom: 40px;
+      width: 70px;
+      }
+      .legend-key {
+      display: inline-block;
+      border-radius: 20%;
+      width: 10px;
+      height: 10px;
+      margin-right: 5px;
+      }
+    /* EOS */
+  </style>
+
+  <script id="insert"></script>
+
+
+</head>
+<body>
+  <!-- Load the `mapbox-gl-geocoder` plugin. -->
+<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+<div id="map"></div>
+<div class="map-overlay" id="features">
+  <div id="pd">
+    <h2>Census 2020</h2>
+    <p>Select a racial/ethnic group from the drop down menu to see either their change in population since 2010.</p>
+  </div>
+  <h3>
+  Topic:
+  </h3>
+  <select id='layerpicker' style = "width:150px;">
+    <option default="true" option value="0">Pop</option>
+    <option value="1">White</option>
+    <option value="2"> Black</option>
+  </select>
+</div>
+<div class="map-overlay" id="legend"></div>
+
+
+    <script type="text/javascript">//<![CDATA[
+
+
+      // define access token
+      mapboxgl.accessToken = 'pk.eyJ1IjoiaWRvdGhldGhpbmtpbmciLCJhIjoiY2s4dXR1eDY0MDVvMzNmcTVqbXc1Z2kzaCJ9.VETkhTCLHbBrKn_3RvVEnA';
+      //create map
+      var map = new mapboxgl.Map({
+        container: 'map', // container id
+        style: 'mapbox://styles/mapbox/light-v11',
+        center: [-122.271,37.799], // starting position
+        zoom: 13 // starting zoom
+      });
+      map.addControl(
+        new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken,
+          mapboxgl: mapboxgl
+        })
+      );
+    //Scroll control
+      var nav = new mapboxgl.NavigationControl();
+      map.addControl(nav, 'top-left');
+      // layer listener
+      const selectElement = document.querySelector('#layerpicker');
+
+      selectElement.addEventListener('change', (event) => {
+        console.log(event.target.value)
+        selectedLayer = event.target.value
+        mapLayers.forEach(l => map.setLayoutProperty(l, "visibility", "none"))
+        map.setLayoutProperty(event.target.value, "visibility", "visible")
+      });
+      // wait for map to load before adjusting it
+      map.on('load', function () {
+       map.addSource("DowntownOakland", {
+            "url": "mapbox://idothethinking.9kv8z5qb",
+            "type": "vector"
+        });
+        map.addLayer({
+          'id': 'tract_outlines',
+          'type': 'line',
+          'source': 'DowntownOakland',
+          'source-layer': "dwtnoak20_00-amhhj4",
+          'layout': {},
+          'paint': {
+          'line-color': '#000000',
+          'line-width': 3
+          },
+        },
+        'settlement-subdivision-label'
+        );
+        console.log("Map loaded with all sources");
+        // make a pointer cursor
+        map.getCanvas().style.cursor = 'default';
+
+        // set map bounds to the continental US
+
+        // make a pointer cursor
+        map.getCanvas().style.cursor = 'default';
+        //Hover effect
+
+        // change info window on hover
+      });
+    
+
+
+  //]]></script>
+
+  <script>
+    // tell the embed parent frame the height of the content
+    if (window.parent && window.parent.parent){
+      window.parent.parent.postMessage(["resultsFrame", {
+        height: document.body.getBoundingClientRect().height,
+        slug: "oyq6pjae"
+      }], "*")
+    }
+
+    // always overwrite window.name, in case users try to set it manually
+    window.name = "result"
+  </script>
+
+
+</body>
+</html>
+
