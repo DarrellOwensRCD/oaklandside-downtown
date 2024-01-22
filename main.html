@@ -56,6 +56,27 @@
     overflow: auto;
     border-radius: 3px;
   }
+  .menus{
+    position: fixed;
+    top: 180px;
+    right: 10px;
+    height: 80px;
+    width: 250px;
+    padding: 8px;
+    text-align: center;
+    cursor: pointer;
+    outline: none;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  #firstDropdown {
+    background-color: #FFAA33;
+  }
+  #secondDropdown {
+    display: none;
+    background-color: #FDDA0D;
+  }
   #map {
     position: absolute;
     top: 0;
@@ -67,13 +88,9 @@
     height: 180px;
     margin-top: 55px;
     width: 250px;
-  }
-  #layerlist {
-    top: 0;
-    left: 0;
-    height: 200px;
-    margin-top: 20px;
-    width: 250px;
+    background-color: #ffffff;
+    outline-color: #0047AB;
+    outline-width: 4px;
   }
   #legend {
     padding: 10px;
@@ -89,9 +106,6 @@
     width: 10px;
     height: 10px;
     margin-right: 5px;
-  }
-  #secondDropdown {
-    display: none;
   }
   /* EOS */
 </style>
@@ -110,6 +124,8 @@
       <h2>Census 2020</h2>
       <p>Select a racial/ethnic group from the drop down menu to see either their change in population since 2010.</p>
     </div>
+  </div>
+  <div class="menus" id="menu_id">
     <select id="firstDropdown" onchange="updateSecondDropdown()">
       <option value="">Select a Topic or Race / Ethnicity</option>
       <option value="A">Population</option>
@@ -172,46 +188,55 @@
     );
      console.log("Map loaded with all sources");
    });
- </script>
- <script>
-  var lastLayer = null;
-  const selectElement = document.querySelector('#secondDropdown');
-  selectElement.addEventListener('change', (event) => {
-    console.log(event.target.value)
-    selectedLayer = event.target.value
-    if (lastLayer != selectedLayer){
-      if (lastLayer){
-        map.removeLayer(lastLayer);
+    // change info window on hover
+    map.on('mousemove', function (e) {
+      var tracts = map.queryRenderedFeatures(e.point,{
+        layers: [selectedLayer]
+      });
+      if(tracts.length > 0){
+        document.getElementById('pd').innerHTML = tracts[0]['properties'][selectedLayer];
       }
-      if (selectedLayer != "none"){
-        map.addLayer({
-          id: selectedLayer,
-          type: 'fill',
-          'source' : "DowntownOakland",
-          'source-layer': "dwtnoak20_00-amhhj4",
-          'layout': {},
-          'paint': {
-            'fill-color': [
-              "case", ["==", ["get", selectedLayer + "_netper"], "This Group Was 0 in 2000"], "#a1a1a1",[
-                "interpolate",
-                ["linear"],
-                ["get", selectedLayer + "_netper"],
-                -100,
-                "#f91515",
-                0,
-                "#ffffff",
-                100,
-                "#02a71d"
-                ]],
-            'fill-opacity': 1
-          }
-        },
-        'road-simple'
-        );
+    });
+  </script>
+  <script>
+    var lastLayer = null;
+    const selectElement = document.querySelector('#secondDropdown');
+    selectElement.addEventListener('change', (event) => {
+      console.log(event.target.value)
+      selectedLayer = event.target.value
+      if (lastLayer != selectedLayer){
+        if (lastLayer){
+          map.removeLayer(lastLayer);
+        }
+        if (selectedLayer != "none"){
+          map.addLayer({
+            id: selectedLayer,
+            type: 'fill',
+            'source' : "DowntownOakland",
+            'source-layer': "dwtnoak20_00-amhhj4",
+            'layout': {},
+            'paint': {
+              'fill-color': [
+                "case", ["==", ["get", selectedLayer + "_netper"], "This Group Was 0 in 2000"], "#a1a1a1",[
+                  "interpolate",
+                  ["linear"],
+                  ["get", selectedLayer + "_netper"],
+                  -100,
+                  "#f91515",
+                  0,
+                  "#ffffff",
+                  100,
+                  "#02a71d"
+                  ]],
+              'fill-opacity': 1
+            }
+          },
+          'road-simple'
+          );
+        }
       }
-    }
-    lastLayer = selectedLayer
-  });
+      lastLayer = selectedLayer
+    });
 
 
   //]]></script>
@@ -227,17 +252,6 @@
 
     // always overwrite window.name, in case users try to set it manually
     window.name = "result"
-  </script>
-  <script>
-    // change info window on hover
-    map.on('mousemove', function (e) {
-      var tracts = map.queryRenderedFeatures(e.point,{
-        layers: [selectedLayer]
-      });
-      if(tracts.length > 0){
-        document.getElementById('pd').innerHTML = tracts[0]['properties'][selectedLayer];
-      }
-    });
   </script>
   <script>
   //This generates the second dropdown menu based on the results from 1
@@ -322,6 +336,9 @@
         option.value = values[i];
         dropdown.add(option);
       }
+    }
+    function goBackToDropdown1() {
+      document.getElementById('dropdown1').innerHTML = '<option value="option1">Option 1</option><option value="option2">Option 2</option>';
     }
   </script>
 
