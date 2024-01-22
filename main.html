@@ -10,177 +10,208 @@
 
 
   <script
-    type="text/javascript"
-    src="/js/lib/dummy.js"
-    
+  type="text/javascript"
+  src="/js/lib/dummy.js"
+
   ></script>
 
-    <link rel="stylesheet" type="text/css" href="/css/result-light.css">
+  <link rel="stylesheet" type="text/css" href="/css/result-light.css">
 
-      <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
-      <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css">
+  <script type="text/javascript" src="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.js"></script>
+  <link rel="stylesheet" type="text/css" href="https://api.tiles.mapbox.com/mapbox-gl-js/v2.3.1/mapbox-gl.css">
 
   <style id="compiled-css" type="text/css">
-      
-      body {
-        margin: 0;
-        padding: 0;
-      }
-      h2,
-      h3 {
-        margin: 10px;
-        font-size: 1.2em;
-      }
-      h3 {
-        font-size: 1em;
-      }
-      p {
-        font-size: 0.85em;
-        margin: 10px;
-        text-align: left;
-      }
-      option:disabled {
-       font-family:"Arial Black";
-       background: #bdbdbd;
-       color: black;
-       width: 500px;
-       padding: 5px;
-       }
-      .map-overlay {
-        position: absolute;
-        bottom: 0;
-        right: 0;
-        background: rgba(255, 255, 255, 0.8);
-        margin-right: 20px;
-        font-family: Arial, sans-serif;
-        overflow: auto;
-        border-radius: 3px;
-      }
-      #map {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-      }
-      #features {
-        top: 0;
-        height: 180px;
-        margin-top: 55px;
-        width: 250px;
-      }
-      #layerlist {
-        top: 0;
-        left: 0;
-        height: 200px;
-        margin-top: 20px;
-        width: 250px;
-      }
-      #legend {
-      padding: 10px;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-      line-height: 18px;
-      height: 90px;
-      margin-bottom: 40px;
-      width: 70px;
-      }
-      .legend-key {
-      display: inline-block;
-      border-radius: 20%;
-      width: 10px;
-      height: 10px;
-      margin-right: 5px;
-      }
-    /* EOS */
-  </style>
 
-  <script id="insert"></script>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    h2,
+    h3 {
+      margin: 10px;
+      font-size: 1.2em;
+    }
+    h3 {
+      font-size: 1em;
+    }
+    p {
+      font-size: 0.85em;
+      margin: 10px;
+      text-align: left;
+    }
+    option:disabled {
+     font-family:"Arial Black";
+     background: #bdbdbd;
+     color: black;
+     width: 500px;
+     padding: 5px;
+   }
+   .map-overlay {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: rgba(255, 255, 255, 0.8);
+    margin-right: 20px;
+    font-family: Arial, sans-serif;
+    overflow: auto;
+    border-radius: 3px;
+  }
+  #map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+  }
+  #features {
+    top: 0;
+    height: 180px;
+    margin-top: 55px;
+    width: 250px;
+  }
+  #layerlist {
+    top: 0;
+    left: 0;
+    height: 200px;
+    margin-top: 20px;
+    width: 250px;
+  }
+  #legend {
+    padding: 10px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    line-height: 18px;
+    height: 90px;
+    margin-bottom: 40px;
+    width: 70px;
+  }
+  .legend-key {
+    display: inline-block;
+    border-radius: 20%;
+    width: 10px;
+    height: 10px;
+    margin-right: 5px;
+  }
+  #secondDropdown {
+    display: none;
+  }
+  /* EOS */
+</style>
+
+<script id="insert"></script>
 
 
 </head>
 <body>
   <!-- Load the `mapbox-gl-geocoder` plugin. -->
-<script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
-<link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
-<div id="map"></div>
-<div class="map-overlay" id="features">
-  <div id="pd">
-    <h2>Census 2020</h2>
-    <p>Select a racial/ethnic group from the drop down menu to see either their change in population since 2010.</p>
+  <script src="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.min.js"></script>
+  <link rel="stylesheet" href="https://api.mapbox.com/mapbox-gl-js/plugins/mapbox-gl-geocoder/v4.7.2/mapbox-gl-geocoder.css" type="text/css">
+  <div id="map"></div>
+  <div class="map-overlay" id="features">
+    <div id="pd">
+      <h2>Census 2020</h2>
+      <p>Select a racial/ethnic group from the drop down menu to see either their change in population since 2010.</p>
+    </div>
+    <select id="firstDropdown" onchange="updateSecondDropdown()">
+      <option value="">Select a Topic or Race / Ethnicity</option>
+      <option value="A">Population</option>
+      <option value="J">Homes</option>
+      <option value="B">White</option>
+      <option value="C">Black</option>
+      <option value="D">Native American</option>
+      <option value="E">Asian</option>
+      <option value="F">Pacific Islander & Native Hawaiian</option>
+      <option value="G">Some Other Race</option>
+      <option value="H">Multi-Racial</option>
+      <option value="I">Latino</option>
+    </select>
+    <select id="secondDropdown" onchange="updateMainDropdown()">
+    </select>
   </div>
-  <h3>
-  Topic:
-  </h3>
-  <select id='layerpicker' style = "width:150px;">
-    <option default="true" option value="0">Pop</option>
-    <option value="1">White</option>
-    <option value="2"> Black</option>
-  </select>
-</div>
-<div class="map-overlay" id="legend"></div>
+  <div class="map-overlay" id="legend"></div>
 
 
     <script type="text/javascript">//<![CDATA[
 
 
       // define access token
-      mapboxgl.accessToken = 'pk.eyJ1IjoiaWRvdGhldGhpbmtpbmciLCJhIjoiY2s4dXR1eDY0MDVvMzNmcTVqbXc1Z2kzaCJ9.VETkhTCLHbBrKn_3RvVEnA';
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaWRvdGhldGhpbmtpbmciLCJhIjoiY2s4dXR1eDY0MDVvMzNmcTVqbXc1Z2kzaCJ9.VETkhTCLHbBrKn_3RvVEnA';
       //create map
-      var map = new mapboxgl.Map({
+    var map = new mapboxgl.Map({
         container: 'map', // container id
         style: 'mapbox://styles/mapbox/light-v11',
         center: [-122.271,37.799], // starting position
         zoom: 13 // starting zoom
       });
-      map.addControl(
-        new MapboxGeocoder({
-          accessToken: mapboxgl.accessToken,
-          mapboxgl: mapboxgl
-        })
+    map.getCanvas().style.cursor = 'default';
+    map.addControl(
+      new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        mapboxgl: mapboxgl
+      })
       );
-    //Scroll control
-      var nav = new mapboxgl.NavigationControl();
-      map.addControl(nav, 'top-left');
-      // layer listener
-      const selectElement = document.querySelector('#layerpicker');
-
-      selectElement.addEventListener('change', (event) => {
-        console.log(event.target.value)
-        selectedLayer = event.target.value
-        mapLayers.forEach(l => map.setLayoutProperty(l, "visibility", "none"))
-        map.setLayoutProperty(event.target.value, "visibility", "visible")
-      });
+      //Scroll control
+    var nav = new mapboxgl.NavigationControl();
+    map.addControl(nav, 'top-left');
       // wait for map to load before adjusting it
-      map.on('load', function () {
-       map.addSource("DowntownOakland", {
-            "url": "mapbox://idothethinking.9kv8z5qb",
-            "type": "vector"
-        });
+    map.on('load', function () {
+     map.addSource("DowntownOakland", {
+      "url": "mapbox://idothethinking.9kv8z5qb",
+      "type": "vector"
+    });
+     map.addLayer({
+      'id': 'tract_outlines',
+      'type': 'line',
+      'source': 'DowntownOakland',
+      'source-layer': "dwtnoak20_00-amhhj4",
+      'layout': {},
+      'paint': {
+        'line-color': '#000000',
+        'line-width': 3
+      },
+    },
+    'settlement-subdivision-label'
+    );
+     console.log("Map loaded with all sources");
+   });
+ </script>
+ <script>
+  var lastLayer = null;
+  const selectElement = document.querySelector('#secondDropdown');
+  selectElement.addEventListener('change', (event) => {
+    console.log(event.target.value)
+    selectedLayer = event.target.value
+    if (lastLayer != selectedLayer){
+      if (lastLayer){
+        map.removeLayer(lastLayer);
+      }
+      if (selectedLayer != "none"){
         map.addLayer({
-          'id': 'tract_outlines',
-          'type': 'line',
-          'source': 'DowntownOakland',
+          id: selectedLayer,
+          type: 'fill',
+          'source' : "DowntownOakland",
           'source-layer': "dwtnoak20_00-amhhj4",
           'layout': {},
           'paint': {
-          'line-color': '#000000',
-          'line-width': 3
-          },
+            'fill-color': [
+              "case", ["==", ["get", selectedLayer + "_netper"], "This Group Was 0 in 2000"], "#a1a1a1",[
+                "interpolate",
+                ["linear"],
+                ["get", selectedLayer + "_netper"],
+                -100,
+                "#f91515",
+                0,
+                "#ffffff",
+                100,
+                "#02a71d"
+                ]],
+            'fill-opacity': 1
+          }
         },
-        'settlement-subdivision-label'
+        'road-simple'
         );
-        console.log("Map loaded with all sources");
-        // make a pointer cursor
-        map.getCanvas().style.cursor = 'default';
-
-        // set map bounds to the continental US
-
-        // make a pointer cursor
-        map.getCanvas().style.cursor = 'default';
-        //Hover effect
-
-        // change info window on hover
-      });
-    
+      }
+    }
+    lastLayer = selectedLayer
+  });
 
 
   //]]></script>
@@ -197,7 +228,102 @@
     // always overwrite window.name, in case users try to set it manually
     window.name = "result"
   </script>
-
+  <script>
+    // change info window on hover
+    map.on('mousemove', function (e) {
+      var tracts = map.queryRenderedFeatures(e.point,{
+        layers: [selectedLayer]
+      });
+      if(tracts.length > 0){
+        document.getElementById('pd').innerHTML = tracts[0]['properties'][selectedLayer];
+      }
+    });
+  </script>
+  <script>
+  //This generates the second dropdown menu based on the results from 1
+    function updateSecondDropdown() {
+      // Get the selected value from the first dropdown
+      var selectedValue = document.getElementById("firstDropdown").value;
+      // Get the second dropdown
+      var secondDropdown = document.getElementById("secondDropdown");
+      console.log(secondDropdown);
+      // Clear existing options
+      secondDropdown.innerHTML = "";
+      if (selectedValue === ""){
+        //Dont show dropdown till user makes selection at first dropdown
+        secondDropdown.style.display = "none";
+      }
+      else{
+        secondDropdown.style.display = "block";
+        // Dynamically populate options for the second dropdown based on the selected value
+        if (selectedValue === "A") {
+          var option1Keys = ["Total Population", "Total Renter Households", "Total Homeowners Households"];
+          var option1Values = ["0", "11", "12"];
+          populateDropdown(secondDropdown, option1Keys, option1Values);
+        } else if (selectedValue === "B") {
+          var option2Keys = ["White Population", "White Leaseholders", "White Homeowners"];
+          var option2Values = ["1", "13", "21"];
+          populateDropdown(secondDropdown, option2Keys, option2Values);
+        }
+        else if (selectedValue === "C") {
+          var option3Keys = ["Black Population", "Black Leaseholders", "Black Homeowners"];
+          var option3Values = ["2", "14", "22"];
+          populateDropdown(secondDropdown, option3Keys, option3Values);
+        }
+        else if (selectedValue === "D") {
+          var option4Keys = ["Native American Population", "Native American Leaseholders", "Native American Homeowners"];
+          var option4Values = ["3", "15", "23"];
+          populateDropdown(secondDropdown,option4Keys,  option4Values);
+        }
+        else if (selectedValue === "E") {
+          var option5Keys = ["Asian Population", "Asian Leaseholders", "Asian Homeowners"];
+          var option5Values = ["4", "16", "24"];
+          populateDropdown(secondDropdown, option5Keys, option5Values);
+        }
+        else if (selectedValue === "F") {
+          var option6Keys = ["Pacific Islander Population", "Pacific Islander Leaseholders", "Pacific Islander Homeowners"];
+          var option6Values = ["5", "17", "25"];
+          populateDropdown(secondDropdown, option6Keys, option6Values);
+        }
+        else if (selectedValue === "G") {
+          var option7Keys = ["Some Other Race Population", "Some Other Race Leaseholders", "Some Other Race Homeowners"];
+          var option7Values = ["6", "18", "26"];
+          populateDropdown(secondDropdown, option7Keys, option7Values);
+        }
+        else if (selectedValue === "H") {
+          var option8Keys = ["Multiracial Population", "Multiracial Leaseholders", "Multiracial Homeowners"];
+          var option8Values = ["7", "19", "27"];
+          populateDropdown(secondDropdown, option8Keys, option8Values);
+        }
+        else if (selectedValue === "I") {
+          var option9Keys = ["Latino Population", "Latino Leaseholders", "Latino Homeowners"];
+          var option9Values = ["8", "20", "28"];
+          populateDropdown(secondDropdown, option9Keys, option9Values);
+        }
+        else if (selectedValue === "J"){
+          var option10Keys = ["Total Housing Units", "Vacant Housing Units Only"];
+          var option10Values = ["9", "10"];
+          populateDropdown(secondDropdown, option10Keys, option10Values);
+        }
+        // Nothing should happen on default
+      }
+    }
+    function populateDropdown(dropdown, keys, values) {
+      for (var i = 0; i < values.length; i++) {
+        if (i === 0){
+            //Shitty solution to the default value problem
+          var option = document.createElement("option");
+          option.text = "Select Group";
+          option.value = "none";
+          dropdown.add(option);
+        }
+        var option = document.createElement("option");
+        option.text = keys[i];
+        option.value = values[i];
+        dropdown.add(option);
+      }
+    }
+  </script>
 
 </body>
 </html>
