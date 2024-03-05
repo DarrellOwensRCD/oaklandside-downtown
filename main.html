@@ -146,16 +146,8 @@
   </div>
   <div class="menus" id="menu_id">
     <select id="firstDropdown" onchange="updateSecondDropdown()">
-      <option value="A">Population</option>
-      <option value="J">Homes</option>
-      <option value="B">White</option>
-      <option value="C">Black</option>
-      <option value="D">Native American</option>
-      <option value="E">Asian</option>
-      <option value="F">Pacific Islander & Native Hawaiian</option>
-      <option value="G">Some Other Race</option>
-      <option value="H">Multi-Racial</option>
-      <option value="I">Latino</option>
+    <option value="A">Population</option>
+    <option value="B">Housing</option>
     </select>
     <select id="secondDropdown" onchange="updateMainDropdown()">
     </select>
@@ -175,11 +167,12 @@
       "G0600010402802": "San Pablo Gateway",
       "G0600010402900": "Uptown East",
       "G0600010403000": "Chinatown",
-      "G0600010403100": "City Center",
+      "G0600010403100": "City Center / Old Oakland",
       "G0600010403301": "Madison Square Park",
       "G0600010403302": "Laney / JLS East",
       "G0600010403402": "Lakeside",
-      "G0600010983200": "Jack London Square"
+      "G0600010983200": "Jack London Square",
+      "G06000104031002006": "Glenn Dyer Detention Facility"
     }
     topic={
       "0": " Population",
@@ -249,8 +242,9 @@
     var map = new mapboxgl.Map({
         container: 'map', // container id
         style: 'mapbox://styles/mapbox/light-v11',
-        center: [-122.271,37.799], // starting position
-        zoom: 13 // starting zoom
+        center: [-122.266,37.801], // starting position
+        zoom: 14, // starting zoom
+        minZoom: 14
       });
     map.getCanvas().style.cursor = 'default';
       //Scroll control
@@ -259,14 +253,14 @@
       // wait for map to load before adjusting it
     map.on('load', function () {
      map.addSource("DowntownOakland", {
-      "url": "mapbox://idothethinking.9kv8z5qb",
+      "url": "mapbox://idothethinking.cl3gsaxc",
       "type": "vector"
     });
      map.addLayer({
       'id': 'tract_outlines',
       'type': 'line',
       'source': 'DowntownOakland',
-      'source-layer': "dwtnoak20_00-amhhj4",
+      'source-layer': "dwtnoak20_00-0etlr7",
       'layout': {},
       'paint': {
         'line-color': '#000000',
@@ -275,14 +269,40 @@
     },
     'settlement-subdivision-label'
     );
+    map.addLayer({
+      id: "0",
+      type: 'fill',
+      'source' : "DowntownOakland",
+      'source-layer': "dwtnoak20_00-0etlr7",
+      'layout': {},
+      'paint': {
+        'fill-color': [
+          "case", ["==", ["get", "0_netper"], "This Group Was 0 in 2000"], "#a1a1a1",[
+            "interpolate",
+            ["linear"],
+            ["get", "0_netper"],
+            -100,
+            "#f91515",
+            0,
+            "#ffffff",
+            100,
+            "#02a71d"
+            ]],
+        'fill-opacity': 1
+      }
+    },
+    'road-simple'
+    );
      console.log("Map loaded with all sources");
    });
+    var selectedLayer = "0";
     // change info window on hover
     map.on('mousemove', function (e) {
       //Should probably add a layer highlighter here, somewhere....
       var tracts = map.queryRenderedFeatures(e.point,{
         layers: [selectedLayer]
       });
+      console.log(selectedLayer)
       if(tracts.length > 0){
         var persign = "%";
         if (tracts[0]['properties'][selectedLayer] > 0){
@@ -297,9 +317,10 @@
           sign2 = "";
           persign = "";
         }
-        document.getElementById('pd').innerHTML = '<p>' + districts[tracts[0]['properties']['GISJOIN']] + '</p><p>' + topic[selectedLayer] + ' (2020): ' +tracts[0]['properties'][current[selectedLayer]] + '</p><p>Change since 2000: '+ sign + tracts[0]['properties'][selectedLayer] + ' ('+ sign2 + tracts[0]['properties'][selectedLayer + '_netper'] + persign + ')</p>' ;
+        document.getElementById('pd').innerHTML = '<p>' + districts[tracts[0]['properties']['GISJOIN']] + '</p><p>' + topic[selectedLayer] + ' (2020): ' +tracts[0]['properties'][selectedLayer + '_2020'] + '</p><p>Change since 2000: '+ sign + tracts[0]['properties'][selectedLayer] + ' ('+ sign2 + tracts[0]['properties'][selectedLayer + '_netper'] + persign + ')</p>' ;
       }
     });
+    console.log("Map operating...")
   </script>
   <script>
     var lastLayer = null;
@@ -316,7 +337,7 @@
             id: selectedLayer,
             type: 'fill',
             'source' : "DowntownOakland",
-            'source-layer': "dwtnoak20_00-amhhj4",
+            'source-layer': "dwtnoak20_00-0etlr7",
             'layout': {},
             'paint': {
               'fill-color': [
@@ -377,61 +398,21 @@
         secondDropdown.style.display = "block";
         // Dynamically populate options for the second dropdown based on the selected value
         if (selectedValue === "A") {
-          var option1Keys = ["Total Population", "Total Renter Households", "Total Homeowners Households"];
-          var option1Values = ["0", "11", "12"];
+          var option1Keys = ["Total Population", "White", "Black", "Native American", "Asian", "Pacific Islander", "Some Other Race", "Multiracial", "Latino"];
+          var option1Values = ["0", "1", "2", "3", "4", "5", "6", "7", "8"];
           populateDropdown(secondDropdown, option1Keys, option1Values);
-        } else if (selectedValue === "B") {
-          var option2Keys = ["White Population", "White Leaseholders", "White Homeowners"];
-          var option2Values = ["1", "21", "13"];
-          populateDropdown(secondDropdown, option2Keys, option2Values);
         }
-        else if (selectedValue === "C") {
-          var option3Keys = ["Black Population", "Black Leaseholders", "Black Homeowners"];
-          var option3Values = ["2", "22", "14"];
-          populateDropdown(secondDropdown, option3Keys, option3Values);
+        else{
+          var option1Keys = ["Total Housing Units", "Vacant Housing Units Only", "Total Renter Households", "Total Homeowners Households"];
+          var option1Values = ["9", "10", "11", "12"];
+          populateDropdown(secondDropdown, option1Keys, option1Values);          
         }
-        else if (selectedValue === "D") {
-          var option4Keys = ["Native American Population", "Native American Leaseholders", "Native American Homeowners"];
-          var option4Values = ["3", "23", "15"];
-          populateDropdown(secondDropdown,option4Keys,  option4Values);
-        }
-        else if (selectedValue === "E") {
-          var option5Keys = ["Asian Population", "Asian Leaseholders", "Asian Homeowners"];
-          var option5Values = ["4", "24", "16"];
-          populateDropdown(secondDropdown, option5Keys, option5Values);
-        }
-        else if (selectedValue === "F") {
-          var option6Keys = ["Pacific Islander Population", "Pacific Islander Leaseholders", "Pacific Islander Homeowners"];
-          var option6Values = ["5", "25", "17"];
-          populateDropdown(secondDropdown, option6Keys, option6Values);
-        }
-        else if (selectedValue === "G") {
-          var option7Keys = ["Some Other Race Population", "Some Other Race Leaseholders", "Some Other Race Homeowners"];
-          var option7Values = ["6", "26", "18"];
-          populateDropdown(secondDropdown, option7Keys, option7Values);
-        }
-        else if (selectedValue === "H") {
-          var option8Keys = ["Multiracial Population", "Multiracial Leaseholders", "Multiracial Homeowners"];
-          var option8Values = ["7", "27", "19"];
-          populateDropdown(secondDropdown, option8Keys, option8Values);
-        }
-        else if (selectedValue === "I") {
-          var option9Keys = ["Latino Population", "Latino Leaseholders", "Latino Homeowners"];
-          var option9Values = ["8", "28", "20"];
-          populateDropdown(secondDropdown, option9Keys, option9Values);
-        }
-        else if (selectedValue === "J"){
-          var option10Keys = ["Total Housing Units", "Vacant Housing Units Only"];
-          var option10Values = ["9", "10"];
-          populateDropdown(secondDropdown, option10Keys, option10Values);
-        }
-        // Nothing should happen on default
       }
     }
     function populateDropdown(dropdown, keys, values) {
       for (var i = 0; i < values.length; i++) {
         if (i === 0){
-            //Shitty solution to the default value problem
+            //inelegant solution to the default value problem
           var option = document.createElement("option");
           option.text = "Select Group";
           option.value = "none";
